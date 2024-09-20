@@ -8,9 +8,7 @@ import scipy.signal
 from glob import glob
 from scipy.signal import lfilter, butter
 from collections import deque
-import sys
 import os
-import time
 
 
 def modify_filters(fft, freq_bins, percentage):
@@ -600,7 +598,8 @@ def print_size_of_file_compression(file_path: str, compressed_file_path: str):
 
     Args:
         file_path (str): This is the path of the original file.
-        compressed_file_path (str): This is the path of the compressed file.
+        compressed_file_path (str): This is the path of the compressed
+                                    file.
     """
     file_size = os.path.getsize(file_path)
     compressed_file_size = os.path.getsize(compressed_file_path)
@@ -612,20 +611,29 @@ def print_size_of_file_compression(file_path: str, compressed_file_path: str):
     print(f"Original File Size: {file_size}")
     print(f"Compressed File Size: {compressed_file_size}")
     print(f"Percent of Compression: {percent_of_compression:.2f}%")
-    print(
-        f"Percent of Compressed File Size Relative to Required File Size:{percent_of_file_size_relative_to_file_size_requirement:.3f}%"
-    )
+    print(f"Percent of Compressed File Size Relative to ", end="")
+    print(f"Required File Size: ", end="")
+    print(f"{percent_of_file_size_relative_to_file_size_requirement:.3f}%")
 
 
 def print_time_each_function_takes_to_complete_processing(
-    start_time: int, stop_time: int, executed_line: str = None
+    start_time: int, stop_time: int, executed_line: str = None, units: str = None
 ):
-    """This function prints the time delta between the start time and the stop time.
+    """This function prints the time delta between the start time and
+    the stop time.
 
     Args:
-        start_time (int): This is the integer representation of the start time in nanoseconds.
-        stop_time (int): This is the integer representation of teh stop time in nanoseconds.
-        executed_line (str, optional): This is the line of code that was executed. Defaults to None.
+        start_time (int): This is the integer representation of the
+                          start time in nanoseconds.
+        stop_time (int): This is the integer representation of the stop
+                         time in nanoseconds.
+        executed_line (str, optional): This is the line of code that was
+                                       executed. Defaults to None.
+        units (str, optional): These are the units to be printed. If no
+                               value is provided, nanoseconds,
+                               milliseconds, microseconds, and
+                               seconds are printed as the selected
+                               units.
     """
     time_Δ = stop_time - start_time
     if executed_line != None:
@@ -635,11 +643,28 @@ def print_time_each_function_takes_to_complete_processing(
         print(f"\n{executed_line_str}")
     else:
         print(f"\n")
-    print(f"Time Δ Nanoseconds: {(time_Δ)}")
-    print(f"Time Δ Microseconds: {(time_Δ / 1e3)}")
-    print(f"Time Δ Milliseconds: {(time_Δ / 1e6)}")
-    print(f"Time Δ Seconds: {(time_Δ / 1e9)}")
-    print(f"\n")
+    if units == None or units == "All":
+        print(f"Time Δ Nanoseconds: {(time_Δ)}")
+        print(f"Time Δ Microseconds: {(time_Δ / 1e3)}")
+        print(f"Time Δ Milliseconds: {(time_Δ / 1e6)}")
+        print(f"Time Δ Seconds: {(time_Δ / 1e9)}")
+        print(f"\n")
+    elif units == "ns":
+        print(f"Time Δ Nanoseconds: {(time_Δ)}")
+        print(f"\n")
+    elif units == "μs":
+        print(f"Time Δ Microseconds: {(time_Δ / 1e3)}")
+        print(f"\n")
+    elif units == "ms":
+        print(f"Time Δ Milliseconds: {(time_Δ / 1e6)}")
+        print(f"\n")
+    elif units == "s":
+        print(f"Time Δ Seconds: {(time_Δ / 1e9)}")
+        print(f"\n")
+    else:
+        error_string = "Error: 'units' must be declared as one of the "
+        +"following: All, ns, μs, ms, or s."
+        raise ValueError(error_string)
 
 
 def write_file_bytes(file_path: str, data_bytes: bytes):
