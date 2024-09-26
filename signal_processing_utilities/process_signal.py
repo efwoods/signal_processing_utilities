@@ -522,7 +522,7 @@ def calculate_time_array(sample_rate: int, neural_data: np.ndarray):
 
 
 def convert_encoded_data_to_byte_string(encoded_data: list):
-    """This converts the encoded data to the a string of bytes.
+    """This converts the encoded data to a string of bytes.
 
     Args:
         encoded_data (list): This is the array of values to be converted
