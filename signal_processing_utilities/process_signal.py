@@ -822,7 +822,6 @@ def decode_rle(
 def encode_rle(
     original_data_list: list,
     use_rle_locations=False,
-    data_is_binary=False,
     UNSIGNED_INTEGER_CUTOFF_VALUE=65530,
 ):
     """This algorithm will search for contiguous values within the
