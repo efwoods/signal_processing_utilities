@@ -433,6 +433,7 @@ def preprocess_signal(raw_neural_signal, sample_rate):
                                           amplitude of the detrended,
                                           and band-pass filtered signal.
     """
+
     # Detrending the signal
     detrended_neural_data = np.int16(scipy.signal.detrend(raw_neural_signal))
 
