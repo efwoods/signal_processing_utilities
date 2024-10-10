@@ -1135,39 +1135,47 @@ def rle_bit_compression(byte_string: bytes, compress=True, rle_locations=None):
         return byte_string, rle_locations
 
 
-def compare_compression_ratio(file, compressed_file: str, method: str = None):
-    """This function prints the compression ratio of two files.
+def compare_compression_ratio(
+    original_data, compressed_data: bytes, method: str = None
+):
+    """This function prints the compression ratio of two byte strings.
 
     Args:
-        file (numpy.ndarray): This is the array of amplitudes before
+        original_data (numpy.ndarray): This is the array of amplitudes before
                               compression.
-        compressed_file (str): This is the compressed representation of
+        compressed_data (bytes): This is the compressed representation of
                                the amplitudes after the method of
                                compression has been applied.
         method (str):  This is the string representing the method of
                        compression. Defaults to None.
     """
-    percent_compression = (1 - (len(compressed_file) / len(file.tobytes()))) * 100
+    percent_compression = (
+        1 - (len(compressed_data) / len(original_data.tobytes()))
+    ) * 100
     if method != None:
         print(f"\nMethod of Compression: {method}")
     else:
         print("\n")
-    print(f"Initial file size: {len(file.tobytes())} bytes.")
-    print(f"Compressed File Size: {len(compressed_file)} bytes.")
+    print(f"Initial file size: {len(original_data.tobytes())} bytes.")
+    print(f"Compressed File Size: {len(compressed_data)} bytes.")
     print(f"Percent of Compression: {percent_compression:.2f}%")
     print(f"\n")
 
 
 def print_compression_efficiency_metrics_wrapper(
-    file: str, compressed_file: str, start_time: int, stop_time: int, method: str
+    original_data,
+    compressed_data: bytes,
+    start_time: int,
+    stop_time: int,
+    method: str,
 ):
     """This is a wrapper function to print the start and stop times as
        well as the ratio of compression. The compressed file may be the
        output compressed string of bytes.
 
     Args:
-        file (str): This is the array of amplitudes before compression
-        compressed_file (str): This is the compressed representation of
+        file (numpy.ndarray): This is the array of amplitudes before compression
+        compressed_file (bytes): This is the compressed representation of
                                the amplitudes after the method of
                                compression has been applied.
         start_time (int): This is the initial starting time in
@@ -1177,7 +1185,9 @@ def print_compression_efficiency_metrics_wrapper(
         method (str): This is the string representing the
                                 method of compression.
     """
-    compare_compression_ratio(file=file, compressed_file=compressed_file, method=method)
-    process_signal.print_time_each_function_takes_to_complete_processing(
+    compare_compression_ratio(
+        original_data=original_data, compressed_data=compressed_data, method=method
+    )
+    print_time_each_function_takes_to_complete_processing(
         start_time=start_time, stop_time=stop_time, executed_line=method
     )
