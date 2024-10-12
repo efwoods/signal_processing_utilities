@@ -11,6 +11,36 @@ from collections import deque
 import os
 
 
+def identify_index_split(rle_locations_in_index_array, verbose=False):
+    """This will identify where the rle_location values reset to a value
+       that is below 65530.
+    Args:
+        rle_locations_in_index_array (list): This is a list of locations
+                                             of values that are encoded
+                                             in the index_array.
+
+    Returns:
+        split_indices (deque): This is a list of indices where the
+                               values are reset in the
+                               rle_locations_array.
+    """
+    split_indices = []
+    for index, value in enumerate(rle_locations_in_index_array):
+        if index == 0:
+            prev_value = value
+            continue
+        if value > prev_value:
+            prev_value = value
+        else:
+            if verbose:
+                print(f"index: {index}")
+                print(f"prev_value: {prev_value}")
+                print(f"value: {value}")
+            split_indices.append(index)
+            prev_value = value
+    return split_indices
+
+
 def modify_filters(fft, freq_bins, percentage):
     """This function will filter the signal of the fast fourier
     transform by a percentage of the frequency with the maximum
