@@ -658,7 +658,7 @@ def print_size_of_file_compression(file_path: str, compressed_file_path: str):
 
     # Percent of Compression
     print(f"Percent of Compression: {percent_of_compression:.2f}%")
-    print(f"The compressed file is ", end="")
+    print(f"The compressed file size is ", end="")
     print(f"{percent_of_compression:.2f}% the size of the ", end="")
     print(f"original file. ")
 
@@ -1222,7 +1222,7 @@ def compare_compression_ratio(
 
     # Percent of Compression
     print(f"Percent of Compression: {percent_of_compression:.2f}%")
-    print(f"The file was compressed in size by ", end="")
+    print(f"The compressed file size is ", end="")
     print(f"{percent_of_compression:.2f}% of the ", end="")
     print(f"original file size.")
 
