@@ -634,7 +634,8 @@ def print_size_of_file_compression(file_path: str, compressed_file_path: str):
     """
     file_size = os.path.getsize(file_path)
     compressed_file_size = os.path.getsize(compressed_file_path)
-    percent_of_compression = (1 - (compressed_file_size / file_size)) * 100
+    percent_of_reduction = (1 - (compressed_file_size / file_size)) * 100
+    percent_of_compression = (compressed_file_size / file_size) * 100
     compression_ratio = file_size / compressed_file_size
     file_size_requirement = file_size // 200
     percent_of_file_size_relative_to_file_size_requirement = (
@@ -642,13 +643,23 @@ def print_size_of_file_compression(file_path: str, compressed_file_path: str):
     ) * 100
     print(f"Original File Size: {file_size}")
     print(f"Compressed File Size: {compressed_file_size}")
-    print(f"Percent of Compression: {percent_of_compression:.2f}%")
     print(f"Percent of Compressed File Size Relative to ", end="")
     print(f"Required File Size: ", end="")
     print(f"{percent_of_file_size_relative_to_file_size_requirement:.3f}%")
-    print(f"The file was compressed by ", end="")
-    print(f"{percent_of_compression:.3f}% of the original file size.")
-    print(f"The compression ratio is: {compression_ratio}.")
+
+    # Percent of Reduction
+    print(f"Percent of Reduction: {percent_of_reduction:.2f}%")
+    print(f"The file was reduced in size by ", end="")
+    print(f"{percent_of_reduction:.3f}% of the original file size.")
+
+    # Percent of Compression
+    print(f"Percent of Compression: {percent_of_compression:.2f}%")
+    print(f"The compressed file is ", end="")
+    print(f"{percent_of_compression:.2f}% the size of the ", end="")
+    print(f"original file. ")
+
+    # Compression Ratio
+    print(f"The compression ratio is: {compression_ratio:.2f}.")
 
 
 def print_time_each_function_takes_to_complete_processing(
@@ -1183,9 +1194,10 @@ def compare_compression_ratio(
         method (str):  This is the string representing the method of
                        compression. Defaults to None.
     """
-    percent_compression = (
+    percent_reduction = (
         1 - (len(compressed_data) / len(original_data.tobytes()))
     ) * 100
+    percent_of_compression = (len(compressed_data) / len(original_data.tobytes())) * 100
     compression_ratio = len(original_data.tobytes()) / len(compressed_data)
 
     if method != None:
@@ -1194,10 +1206,21 @@ def compare_compression_ratio(
         print("\n")
     print(f"Initial file size: {len(original_data.tobytes())} bytes.")
     print(f"Compressed File Size: {len(compressed_data)} bytes.")
-    print(f"Percent of Compression: {percent_compression:.2f}%")
-    print(f"The file was compressed by {percent_compression}% ", end="")
-    print(f"of the original size of the file size.")
-    print(f"Compression Ratio: {compression_ratio}")
+
+    # Percent of Reduction
+    print(f"Percent of Reduction: {percent_reduction:.2f}%")
+    print(f"The file was reduced in size by ", end="")
+    print(f"{percent_reduction:.2f}% ", end="")
+    print(f"of the original size of the file. ")
+
+    # Percent of Compression
+    print(f"Percent of Compression: {percent_of_compression:.2f}%")
+    print(f"The file was compressed in size by ", end="")
+    print(f"{percent_of_compression:.2f}% of the ", end="")
+    print(f"original file size.")
+
+    # Compression Ratio
+    print(f"Compression Ratio: {compression_ratio:.2f}")
     print(f"\n")
 
 
