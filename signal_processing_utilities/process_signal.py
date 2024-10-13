@@ -1221,3 +1221,25 @@ def print_compression_efficiency_metrics_wrapper(
     print_time_each_function_takes_to_complete_processing(
         start_time=start_time, stop_time=stop_time, executed_line=method
     )
+
+
+def compare_for_equality(b_string1, b_string2):
+    """This function will compare two byte strings to ensure each
+        element is identical in both strings of bytes. If they are
+        equal, this function will return 'True'. Otherwise, this
+        function will return 'False'.
+
+
+    Args:
+        b_string1 (bytes): This is a unique string of bytes.
+        b_string2 (bytes): This is the comparison string of bytes.
+    """
+    if len(b_string1) != len(b_string2):
+        return False
+    if type(b_string1) != type(b_string2):
+        return False
+    equal = True
+    for index, value in enumerate(b_string1):
+        if b_string2[index] != value:
+            equal = False
+    return equal
