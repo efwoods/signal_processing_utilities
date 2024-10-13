@@ -643,9 +643,7 @@ def print_size_of_file_compression(file_path: str, compressed_file_path: str):
     ) * 100
     print(f"Original File Size: {file_size}")
     print(f"Compressed File Size: {compressed_file_size}")
-    print(
-        f"Reduction in File Size: {len(file_size) - len(compressed_file_size)} bytes."
-    )
+    print(f"Reduction in File Size: {file_size - compressed_file_size} bytes.")
 
     print(f"Percent of Compressed File Size Relative to ", end="")
     print(f"Required File Size: ", end="")
