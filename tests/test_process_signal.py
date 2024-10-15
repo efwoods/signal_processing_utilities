@@ -17,7 +17,7 @@ class TestProcessSignal(unittest.TestCase):
     """
 
     def setUp(self):
-        self.file_path = "./test_data/0ab237b7-fb12-4687-afed-8d1e2070d621.wav"
+        self.file_path = "test_data/0ab237b7-fb12-4687-afed-8d1e2070d621.wav"
 
     def tearDown(self):
         pass
@@ -66,7 +66,7 @@ class TestProcessSignal(unittest.TestCase):
         )
 
         _, data = wavfile.read(self.file_path)
-        spike_train_time_index_list = process_signal.detect_neural_spikes(
+        spike_train_time_index_list = detect_neural_spikes(
             neural_data=data, single_spike_detection=False, real_time=True
         )
         self.assertEqual(type(spike_train_time_index_list), np.ndarray)
