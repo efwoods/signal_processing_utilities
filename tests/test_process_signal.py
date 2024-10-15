@@ -2,6 +2,7 @@
 
 import unittest
 import logging
+from scipy.io import wavfile
 from signal_processing_utilities import process_signal
 
 logging.basicConfig(level=logging.DEBUG)
@@ -15,7 +16,7 @@ class TestProcessSignal(unittest.TestCase):
     """
 
     def setUp(self):
-        pass
+        self.file_path = "./test_data/0ab237b7-fb12-4687-afed-8d1e2070d621.wav"
 
     def tearDown(self):
         pass
@@ -54,4 +55,16 @@ class TestProcessSignal(unittest.TestCase):
         byte_string2 = b"100101011001"
         self.assertEqual(
             process_signal.compare_for_equality(byte_string1, byte_string2), False
+        )
+
+    def test04_process_neural_spikes(self):
+        logging.info(
+            "test04: This is a test to ensure that the spikes of the "
+            + "raw neural data may be processed & that the data may be "
+            + "processed in a timely manner. "
+        )
+
+        sr, data = wavfile.read(self.file_path)
+        process_signal.detect_neural_spikes(
+            neural_data=data, single_spike_detection=False, real_time=True
         )

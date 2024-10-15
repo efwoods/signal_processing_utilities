@@ -219,7 +219,7 @@ def estimate_noise_floor(amplitude_array, window_size=10):
         return noise_floor_estimate
 
 
-def detect_neural_spikes(neural_data, single_spike_detection=False):
+def detect_neural_spikes(neural_data, single_spike_detection=False, real_time=True):
     """This function detects spikes in real-time.
     It returns an array of spikes at specific times and amplitudes with
     zeroed out noise.
@@ -234,46 +234,98 @@ def detect_neural_spikes(neural_data, single_spike_detection=False):
                                        reflect only these detected
                                        amplitudes that correspond with
                                        the single detected spike.
+        real_time (bool): This is a boolean flag that indicates whether
+                    the neural spikes are to be detected
+                    iteratively or collectively.
     Returns:
         (list): This is the array inclusive of amplitudes of spikes at
                 each specific point in the initial time array. Non-spike
                 points have been replaced with amplitudes of zero value.
     """
-    noise_floor_window = 5
-    initial_first_point_of_spike_detected = False
-    second_point_of_spike_detected = False
-    third_point_of_spike_detected = False
-    spike_train_time_index_list = []
+    if real_time:
+        noise_floor_window = 5
+        initial_first_point_of_spike_detected = False
+        second_point_of_spike_detected = False
+        third_point_of_spike_detected = False
+        spike_train_time_index_list = []
 
-    for current_time_index, value in enumerate(neural_data):
-        # Estimate the noise floor
-        if current_time_index < noise_floor_window:
-            current_noise_floor_estimate_list = estimate_noise_floor(
-                [neural_data[current_time_index]]
-            )
-        else:
-            current_noise_floor_estimate_list = estimate_noise_floor(
-                neural_data[
-                    current_time_index - noise_floor_window : current_time_index
-                ],
-                window_size=noise_floor_window,
-            )
-
-        current_noise_floor_estimate = current_noise_floor_estimate_list[0]
-        current_noise_floor_estimate_inverse = -(current_noise_floor_estimate)
-
-        # Detect Initial First Point
-        if initial_first_point_of_spike_detected == False:
-            if current_time_index == 0:
-                local_maximum_list_of_current_time_index = (
-                    identify_potential_initial_spikes(
-                        neural_data[current_time_index : current_time_index + 1]
-                    )
-                )
-                is_current_time_index_local_maximum = (
-                    local_maximum_list_of_current_time_index[0]
+        for current_time_index, value in enumerate(neural_data):
+            # Estimate the noise floor
+            if current_time_index < noise_floor_window:
+                current_noise_floor_estimate_list = estimate_noise_floor(
+                    [neural_data[current_time_index]]
                 )
             else:
+                current_noise_floor_estimate_list = estimate_noise_floor(
+                    neural_data[
+                        current_time_index - noise_floor_window : current_time_index
+                    ],
+                    window_size=noise_floor_window,
+                )
+
+            current_noise_floor_estimate = current_noise_floor_estimate_list[0]
+            current_noise_floor_estimate_inverse = -(current_noise_floor_estimate)
+
+            # Detect Initial First Point
+            if initial_first_point_of_spike_detected == False:
+                if current_time_index == 0:
+                    local_maximum_list_of_current_time_index = (
+                        identify_potential_initial_spikes(
+                            neural_data[current_time_index : current_time_index + 1]
+                        )
+                    )
+                    is_current_time_index_local_maximum = (
+                        local_maximum_list_of_current_time_index[0]
+                    )
+                else:
+                    local_maximum_list_of_current_time_index = (
+                        identify_potential_initial_spikes(
+                            neural_data[current_time_index - 1 : current_time_index + 2]
+                        )
+                    )
+                    is_current_time_index_local_maximum = (
+                        local_maximum_list_of_current_time_index[1]
+                    )
+
+                if is_current_time_index_local_maximum == True:
+                    # First Point Potentially Identified
+                    initial_first_point_of_spike_detected = True
+                    spike_time_index_first_point = current_time_index
+            elif (
+                second_point_of_spike_detected == False
+                and initial_first_point_of_spike_detected == True
+            ):
+                # Detect Second Point
+                local_minimum_list_of_current_time_index = (
+                    identify_potential_initial_spikes(
+                        neural_data[current_time_index - 1 : current_time_index + 2],
+                        return_local_maximum=False,
+                    )
+                )
+                is_current_time_index_local_minimum = (
+                    local_minimum_list_of_current_time_index[1]
+                )
+                if is_current_time_index_local_minimum == True:
+                    if (
+                        neural_data[current_time_index]
+                        < current_noise_floor_estimate_inverse
+                    ):
+                        # Second Point Found
+                        spike_time_index_list_first_to_second_points = np.arange(
+                            start=spike_time_index_first_point,
+                            stop=current_time_index,
+                            step=1,
+                        )
+                        spike_time_index_second_point = current_time_index
+                        second_point_of_spike_detected = True
+                    else:
+                        initial_first_point_of_spike_detected = False
+            elif (
+                initial_first_point_of_spike_detected == True
+                and second_point_of_spike_detected == True
+                and third_point_of_spike_detected == False
+            ):
+                # Detect Third Point
                 local_maximum_list_of_current_time_index = (
                     identify_potential_initial_spikes(
                         neural_data[current_time_index - 1 : current_time_index + 2]
@@ -282,102 +334,57 @@ def detect_neural_spikes(neural_data, single_spike_detection=False):
                 is_current_time_index_local_maximum = (
                     local_maximum_list_of_current_time_index[1]
                 )
-
-            if is_current_time_index_local_maximum == True:
-                # First Point Potentially Identified
-                initial_first_point_of_spike_detected = True
-                spike_time_index_first_point = current_time_index
-        elif (
-            second_point_of_spike_detected == False
-            and initial_first_point_of_spike_detected == True
-        ):
-            # Detect Second Point
-            local_minimum_list_of_current_time_index = (
-                identify_potential_initial_spikes(
-                    neural_data[current_time_index - 1 : current_time_index + 2],
-                    return_local_maximum=False,
-                )
-            )
-            is_current_time_index_local_minimum = (
-                local_minimum_list_of_current_time_index[1]
-            )
-            if is_current_time_index_local_minimum == True:
-                if (
-                    neural_data[current_time_index]
-                    < current_noise_floor_estimate_inverse
-                ):
-                    # Second Point Found
-                    spike_time_index_list_first_to_second_points = np.arange(
-                        start=spike_time_index_first_point,
-                        stop=current_time_index,
+                if is_current_time_index_local_maximum == True:
+                    if neural_data[current_time_index] > current_noise_floor_estimate:
+                        # Third Point Found
+                        spike_time_index_list_second_to_third_points = np.arange(
+                            spike_time_index_second_point,
+                            current_time_index,
+                            step=1,
+                        )
+                        third_point_of_spike_detected = True
+                        time_index_of_most_recent_third_spike = current_time_index
+                    else:
+                        initial_first_point_of_spike_detected = True
+                        second_point_of_spike_detected = False
+                        spike_time_index_first_point = current_time_index
+            elif (
+                initial_first_point_of_spike_detected == True
+                and second_point_of_spike_detected == True
+                and third_point_of_spike_detected == True
+            ):
+                # Detect Fourth Point
+                if neural_data[current_time_index] < 0:
+                    time_index_of_most_recent_fourth_spike_point = current_time_index
+                    spike_time_index_list_third_to_fourth_points = np.arange(
+                        time_index_of_most_recent_third_spike,
+                        time_index_of_most_recent_fourth_spike_point
+                        + 1,  # include the fourth detected point
                         step=1,
                     )
-                    spike_time_index_second_point = current_time_index
-                    second_point_of_spike_detected = True
-                else:
+                    spike_time_index_list = np.concatenate(
+                        [
+                            spike_time_index_list_first_to_second_points,
+                            spike_time_index_list_second_to_third_points,
+                            spike_time_index_list_third_to_fourth_points,
+                        ]
+                    )
+                    spike_train_time_index_list.append(spike_time_index_list)
+
                     initial_first_point_of_spike_detected = False
-        elif (
-            initial_first_point_of_spike_detected == True
-            and second_point_of_spike_detected == True
-            and third_point_of_spike_detected == False
-        ):
-            # Detect Third Point
-            local_maximum_list_of_current_time_index = (
-                identify_potential_initial_spikes(
-                    neural_data[current_time_index - 1 : current_time_index + 2]
-                )
-            )
-            is_current_time_index_local_maximum = (
-                local_maximum_list_of_current_time_index[1]
-            )
-            if is_current_time_index_local_maximum == True:
-                if neural_data[current_time_index] > current_noise_floor_estimate:
-                    # Third Point Found
-                    spike_time_index_list_second_to_third_points = np.arange(
-                        spike_time_index_second_point,
-                        current_time_index,
-                        step=1,
-                    )
-                    third_point_of_spike_detected = True
-                    time_index_of_most_recent_third_spike = current_time_index
-                else:
-                    initial_first_point_of_spike_detected = True
                     second_point_of_spike_detected = False
-                    spike_time_index_first_point = current_time_index
-        elif (
-            initial_first_point_of_spike_detected == True
-            and second_point_of_spike_detected == True
-            and third_point_of_spike_detected == True
-        ):
-            # Detect Fourth Point
-            if neural_data[current_time_index] < 0:
-                time_index_of_most_recent_fourth_spike_point = current_time_index
-                spike_time_index_list_third_to_fourth_points = np.arange(
-                    time_index_of_most_recent_third_spike,
-                    time_index_of_most_recent_fourth_spike_point
-                    + 1,  # include the fourth detected point
-                    step=1,
-                )
-                spike_time_index_list = np.concatenate(
-                    [
-                        spike_time_index_list_first_to_second_points,
-                        spike_time_index_list_second_to_third_points,
-                        spike_time_index_list_third_to_fourth_points,
-                    ]
-                )
-                spike_train_time_index_list.append(spike_time_index_list)
-
-                initial_first_point_of_spike_detected = False
-                second_point_of_spike_detected = False
-                third_point_of_spike_detected = False
-                if single_spike_detection == True:
-                    break
+                    third_point_of_spike_detected = False
+                    if single_spike_detection == True:
+                        break
+            else:
+                raise ValueError("Error in Spike Detection State")
+        if len(spike_time_index_list) > 0:
+            return spike_train_time_index_list
         else:
-            raise ValueError("Error in Spike Detection State")
-    if len(spike_time_index_list) > 0:
-        return spike_train_time_index_list
+            raise ValueError("No Detected Spikes")
     else:
-        raise ValueError("No Detected Spikes")
+        # implement collective neural spike detection
+        pass
 
 
 def create_encoded_data(
