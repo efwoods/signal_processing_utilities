@@ -3,6 +3,7 @@
 import unittest
 import logging
 from scipy.io import wavfile
+import numpy as np
 from signal_processing_utilities import process_signal
 
 logging.basicConfig(level=logging.DEBUG)
@@ -64,7 +65,8 @@ class TestProcessSignal(unittest.TestCase):
             + "processed in a timely manner. "
         )
 
-        sr, data = wavfile.read(self.file_path)
-        process_signal.detect_neural_spikes(
+        _, data = wavfile.read(self.file_path)
+        spike_train_time_index_list = process_signal.detect_neural_spikes(
             neural_data=data, single_spike_detection=False, real_time=True
         )
+        self.assertEqual(type(spike_train_time_index_list), np.ndarray)
