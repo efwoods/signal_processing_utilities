@@ -2,6 +2,8 @@
 
 import unittest
 import logging
+from scipy.io import wavfile
+import numpy as np
 from signal_processing_utilities import process_signal
 
 logging.basicConfig(level=logging.DEBUG)
@@ -15,7 +17,7 @@ class TestProcessSignal(unittest.TestCase):
     """
 
     def setUp(self):
-        pass
+        self.file_path = "tests/test_data/0ab237b7-fb12-4687-afed-8d1e2070d621.wav"
 
     def tearDown(self):
         pass
@@ -62,3 +64,24 @@ class TestProcessSignal(unittest.TestCase):
         self.assertEqual(
             process_signal.compare_for_equality(byte_string1, byte_string2), False
         )
+
+    def test04_test_signal_processing_utilities_print_file_size(self):
+        logging.info(
+            "test04: This is a test to ensure that "
+            + "signal_processing_utilities has been locally"
+            + "imported and is readily available for use."
+        )
+        process_signal.print_file_size(file_path=self.file_path)
+
+    def test05_process_neural_spikes(self):
+        logging.info(
+            "test05: This is a test to ensure that the spikes of the "
+            + "raw neural data may be processed & that the data may be "
+            + "processed in a timely manner. "
+        )
+
+        _, data = wavfile.read(self.file_path)
+        spike_train_time_index_list = process_signal.detect_neural_spikes(
+            neural_data=data, single_spike_detection=False, real_time=True
+        )
+        self.assertEqual(type(spike_train_time_index_list), list)
