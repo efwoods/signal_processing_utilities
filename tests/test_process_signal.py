@@ -65,7 +65,7 @@ class TestProcessSignal(unittest.TestCase):
             process_signal.compare_for_equality(byte_string1, byte_string2), False
         )
 
-    def test04_test_signal_processing_utilities_print_file_size(self):
+    def test05_test_signal_processing_utilities_print_file_size(self):
         logging.info(
             "test04: This is a test to ensure that "
             + "signal_processing_utilities has been locally"
@@ -73,7 +73,7 @@ class TestProcessSignal(unittest.TestCase):
         )
         process_signal.print_file_size(file_path=self.file_path)
 
-    def test05_process_neural_spikes(self):
+    def test06_process_neural_spikes(self):
         logging.info(
             "test05: This is a test to ensure that the spikes of the "
             + "raw neural data may be processed & that the data may be "
