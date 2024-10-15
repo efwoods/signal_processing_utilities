@@ -23,8 +23,15 @@ class TestProcessSignal(unittest.TestCase):
         pass
 
     def test01_compare_for_equality(self):
+        logging.info("test01: This is a test to ensure testing is operational. ")
+        test_passes = True
+        self.assertTrue(test_passes)
+        if test_passes:
+            print("Test Passes")
+
+    def test02_compare_for_equality_in_length(self):
         logging.info(
-            "test01: This is a test to ensure that the byte strings are of "
+            "test02: This is a test to ensure that the byte strings are of "
             + "equal length. The lengths are unequal and the return value "
             + "is intended to be 'False'."
         )
@@ -34,9 +41,9 @@ class TestProcessSignal(unittest.TestCase):
             process_signal.compare_for_equality(byte_string1, byte_string2), False
         )
 
-    def test02_compare_for_equality(self):
+    def test03_compare_for_equality_in_value(self):
         logging.info(
-            "test02: This is a test to ensure that the byte strings are of "
+            "test03: This is a test to ensure that the byte strings are of "
             + "equal value. The values are unequal and the return value "
             + "is intended to be 'False'."
         )
@@ -46,9 +53,9 @@ class TestProcessSignal(unittest.TestCase):
             process_signal.compare_for_equality(byte_string1, byte_string2), False
         )
 
-    def test03_compare_for_equality(self):
+    def test04_compare_for_equality_in_type(self):
         logging.info(
-            "test03: This is a test to ensure that the byte strings are of "
+            "test04: This is a test to ensure that the byte strings are of "
             + "equal type. The types are unequal and the return value "
             + "is intended to be 'False'."
         )
