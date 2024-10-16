@@ -85,3 +85,7 @@ class TestProcessSignal(unittest.TestCase):
             neural_data=data, single_spike_detection=False, real_time=True
         )
         self.assertEqual(type(spike_train_time_index_list), list)
+
+
+if __name__ == "__main__":
+    unittest.main()
