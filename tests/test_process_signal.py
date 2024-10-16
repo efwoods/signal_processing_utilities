@@ -4,7 +4,19 @@ import unittest
 import logging
 from scipy.io import wavfile
 import numpy as np
-from signal_processing_utilities import process_signal
+
+# Importing local version of "process_signal" file
+from importlib.util import spec_from_loader, module_from_spec
+from importlib.machinery import SourceFileLoader
+
+spec = spec_from_loader(
+    "process_signal",
+    SourceFileLoader(
+        "process_signal", "./signal_processing_utilities/process_signal.py"
+    ),
+)
+process_signal = module_from_spec(spec)
+spec.loader.exec_module(process_signal)
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -85,3 +97,7 @@ class TestProcessSignal(unittest.TestCase):
             neural_data=data, single_spike_detection=False, real_time=True
         )
         self.assertEqual(type(spike_train_time_index_list), list)
+
+
+if __name__ == "__main__":
+    unittest.main()
