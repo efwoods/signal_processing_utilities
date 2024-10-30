@@ -4,7 +4,20 @@ import unittest
 import logging
 from scipy.io import wavfile
 import numpy as np
-from signal_processing_utilities import process_signal
+from brainwire import encode
+
+# Importing local version of "process_signal" file
+from importlib.util import spec_from_loader, module_from_spec
+from importlib.machinery import SourceFileLoader
+
+spec = spec_from_loader(
+    "process_signal",
+    SourceFileLoader(
+        "process_signal", "./signal_processing_utilities/process_signal.py"
+    ),
+)
+process_signal = module_from_spec(spec)
+spec.loader.exec_module(process_signal)
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -65,17 +78,17 @@ class TestProcessSignal(unittest.TestCase):
             process_signal.compare_for_equality(byte_string1, byte_string2), False
         )
 
-    def test04_test_signal_processing_utilities_print_file_size(self):
+    def test05_test_signal_processing_utilities_print_file_size(self):
         logging.info(
-            "test04: This is a test to ensure that "
+            "test05: This is a test to ensure that "
             + "signal_processing_utilities has been locally"
             + "imported and is readily available for use."
         )
         process_signal.print_file_size(file_path=self.file_path)
 
-    def test05_process_neural_spikes(self):
+    def test06_process_neural_spikes(self):
         logging.info(
-            "test05: This is a test to ensure that the spikes of the "
+            "test06: This is a test to ensure that the spikes of the "
             + "raw neural data may be processed & that the data may be "
             + "processed in a timely manner. "
         )
@@ -85,6 +98,19 @@ class TestProcessSignal(unittest.TestCase):
             neural_data=data, single_spike_detection=False, real_time=True
         )
         self.assertEqual(type(spike_train_time_index_list), list)
+
+    def test07_compare_compression_ratio(self):
+        logging.info(
+            "test07: This is a test to ensure that the compression "
+            + "ratio is appropriately compared."
+        )
+        _, original_data = wavfile.read(self.file_path)
+        byte_string = encode.compress(file=self.file_path)
+        process_signal.compare_compression_ratio(
+            original_data=original_data,
+            compressed_data=byte_string,
+            method="brainwire.encode.compress(file=self.file_path)",
+        )
 
 
 if __name__ == "__main__":
